@@ -13,20 +13,31 @@ let x = canvas.width / 2;
 let y = canvas.height - 60;
 let r = 10;
 let dx = 2;
-let dy = -2;
+let dy = 2;
 
 const draw = () => {
   ctx.clearRect(x-r*2, y-r*2, x+r*2, y+r*2);
   drawBall(x, y, r);
+
   x += dx;
   y += dy;
 
   if (x >= canvas.width - r || x <= r) {
-    dx = -dx;
+    let rx = Math.random() - 0.5;
+    console.log(`dx= ${dx}, rx=${rx}`);
+    dx = -dx + rx;
+    console.log(`new dx=${dx}`);
+    console.log(`x=${x}, y=${y}`);
   }
+  
+  if (y <= r || y >= canvas.height - r) {
+   let ry = Math.random() - 0.5;
+   console.log(`dy=${dy}, ry=${ry}`);
 
-  if (y <= r || y >= canvas.height - r) dy = -dy;
-
+   dy = -dy + ry;
+   console.log(`new dy=${dy}`);
+   console.log(`x=${x}, y=${y}`);
+  }
   requestAnimationFrame(draw);
 };
 
