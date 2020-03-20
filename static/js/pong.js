@@ -9,35 +9,29 @@ const drawBall = (x, y, r) => {
   ctx.closePath();
 };
 
+const drawBar = (x, width, height) => {
+  ctx.fillStyle = "black";
+  ctx.fillRect(x, canvas.height-height, width, height);
+} 
+
 let x = canvas.width / 2;
 let y = canvas.height - 60;
 let r = 10;
 let dx = 2;
 let dy = 2;
+const barHeight=20;
+const barWidth=140;
 
 const draw = () => {
   ctx.clearRect(x-r*2, y-r*2, x+r*2, y+r*2);
   drawBall(x, y, r);
-
+  drawBar(Math.floor(canvas.width/2-50), barWidth, barHeight);
   x += dx;
   y += dy;
 
-  if (x >= canvas.width - r || x <= r) {
-    let rx = Math.random() - 0.5;
-    console.log(`dx= ${dx}, rx=${rx}`);
-    dx = -dx + rx;
-    console.log(`new dx=${dx}`);
-    console.log(`x=${x}, y=${y}`);
-  }
-  
-  if (y <= r || y >= canvas.height - r) {
-   let ry = Math.random() - 0.5;
-   console.log(`dy=${dy}, ry=${ry}`);
+  if (x >= canvas.width - r || x <= r) dx = -dx;
+  if (y <= r || y >= canvas.height - r) dy = -dy;
 
-   dy = -dy + ry;
-   console.log(`new dy=${dy}`);
-   console.log(`x=${x}, y=${y}`);
-  }
   requestAnimationFrame(draw);
 };
 
