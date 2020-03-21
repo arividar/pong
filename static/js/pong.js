@@ -1,11 +1,12 @@
 "use strict";
 
+let canvas = document.getElementById("skjarinn");
+let ctx = canvas.getContext("2d");
+
 const barHeight = 20;
 const barWidth = 140;
 const ballR = 10;
 const barSpeed = 10;
-let canvas = document.getElementById("skjarinn");
-let ctx = canvas.getContext("2d");
 
 let ballX = canvas.width / 2;
 let ballY = canvas.height - 60;
@@ -51,7 +52,6 @@ const draw = () => {
   ballX += dx;
   ballY += dy;
   drawBall(ballX, ballY, ballR);
-
   if (ballX >= canvas.width - ballR || ballX <= ballR) {
     dx = -dx;
     beep();
@@ -60,7 +60,6 @@ const draw = () => {
     dy = -dy;
     beep();
   }
-
   if (leftKeyPressed) {
     clearBar(barX);
     barX -= barSpeed;
