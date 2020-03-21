@@ -53,6 +53,9 @@ const beep = () => {
 };
 
 const gameOver = () => {
+  ballY = canvas.height - ballR;
+  drawBar();
+  drawBall();
   isGameOver = true;
   isPaused = true;
   const snd = new Audio("static/media/Funny-game-over-sound.mp3");
@@ -85,15 +88,17 @@ const draw = () => {
     return;
   }
   clearBall();
+
   ballX += ballDirectionX * ballSpeed;
   ballY += ballDirectionY * ballSpeed;
-  drawBall();
 
   if (ballY + ballR >= canvas.height) {
     gameOver();
     return;
   }
   
+  drawBall();
+
   if (ballX >= canvas.width - ballR || ballX <= ballR) {
     ballDirectionX = -ballDirectionX;
     tick();
