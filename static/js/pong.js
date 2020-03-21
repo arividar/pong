@@ -1,4 +1,4 @@
-'use strict'
+"use strict";
 
 const barHeight = 20;
 const barWidth = 140;
@@ -12,6 +12,8 @@ let ballY = canvas.height - 60;
 let dx = 3;
 let dy = 3;
 let barX = canvas.width / 2 - barWidth / 2;
+let leftKeyPressed = false;
+let rightKeyPressed = false;
 
 const clearBall = (x, y, r) =>
   ctx.clearRect(x - r * 2, y - r * 2, x + r * 2, y + r * 2);
@@ -24,7 +26,8 @@ const drawBall = (x, y, r) => {
   ctx.closePath();
 };
 
-const clearBar = x => ctx.clearRect(x, canvas.height - barHeight, barWidth, barHeight);
+const clearBar = x =>
+  ctx.clearRect(x, canvas.height - barHeight, barWidth, barHeight);
 
 const drawBar = x => {
   ctx.fillStyle = "black";
@@ -32,7 +35,6 @@ const drawBar = x => {
 };
 
 const draw = () => {
-
   clearBall(ballX, ballY, ballR);
   ballX += dx;
   ballY += dy;
@@ -40,29 +42,34 @@ const draw = () => {
 
   if (ballX >= canvas.width - ballR || ballX <= ballR) dx = -dx;
   if (ballY <= ballR || ballY >= canvas.height - ballR) dy = -dy;
-  
 
-  let newBarX = barX;
-  document.onkeydown = function(event) {
-    switch (event.keyCode) {
-       case 37: // left
-          newBarX = barX - barSpeed;
-          break;
-        case 39: // right
-          newBarX = barX + barSpeed;
-          break;
-       case 38: // up
-       case 40: // down
-    }
-    if (newBarX !== barX) {
-      clearBar(barX);
-      barX = newBarX;
-      drawBar(barX);
-    }
+  if (leftKeyPressed) {
+    clearBar(barX);
+    barX -= barSpeed;
+  }
+  if (rightKeyPressed) {
+    clearBar(barX);
+    barX += barSpeed;
   }
   drawBar(barX);
   requestAnimationFrame(draw);
-}
+};
 
+document.addEventListener(
+  "keyup",
+  event => {
+    if (event.keyCode === 37) leftKeyPressed = false;
+    if (event.keyCode === 39) rightKeyPressed = false;
+  },
+  false
+);
+
+document.addEventListener(
+  "keydown",
+  event => {
+    leftKeyPressed = event.keyCode === 37;
+    rightKeyPressed = event.keyCode === 39;
+  },
+  false
+);
 requestAnimationFrame(draw);
-
