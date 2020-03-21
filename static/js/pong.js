@@ -6,59 +6,112 @@ let ctx = canvas.getContext("2d");
 const barHeight = 20;
 const barWidth = 140;
 const ballR = 10;
+const ballSpeed = 3;
 const barSpeed = 10;
 
-let ballX = canvas.width / 2;
-let ballY = canvas.height - 60;
-let dx = 3;
-let dy = 3;
-let barX = canvas.width / 2 - barWidth / 2;
-let leftKeyPressed = false;
-let rightKeyPressed = false;
-let paused = false;
+let leftKeyPressed=false;
+let rightKeyPressed=false;
+
+let isPaused;
+let isGameOver;
+let ballX;
+let ballY;
+let dx;
+let dy;
+let barX;
+
+const startNewGame = () => {
+  barX = canvas.width / 2 - barWidth / 2;
+  ballX = barX + Math.floor(Math.random() * barWidth);
+  ballY = canvas.height - barHeight - ballR - 1;
+  dx = Math.random() > 0.5 ? ballSpeed : -ballSpeed;
+  dy = -ballSpeed;
+  isGameOver = false;
+  isPaused = false;
+  drawBar();
+  drawBall();
+  requestAnimationFrame(draw);
+}
+
+const restartGame = () => {
+  clearBar();
+  clearBall();
+  startNewGame();
+}
 
 const tick = () => {
-  const snd = new Audio('static/media/tick.mp3');
+  const snd = new Audio("static/media/tick.mp3");
   snd.volume = 0.2;
   snd.play();
 };
 
-const clearBall = (x, y, r) =>
-  ctx.clearRect(x - r * 2, y - r * 2, x + r * 2, y + r * 2);
+const beep = () => {
+  const snd = new Audio("static/media/button-16.wav");
+  snd.volume = 0.2;
+  snd.play();
+};
 
-const drawBall = (x, y, r) => {
+const gameOver = () => {
+  isGameOver = true;
+  isPaused = true;
+  const snd = new Audio("static/media/Funny-game-over-sound.mp3");
+  snd.volume = 0.3;
+  snd.play();
+};
+
+const clearBall = () =>
+  ctx.clearRect(ballX - ballR * 2, ballY - ballR * 2, ballX + ballR * 2, ballY + ballR * 2);
+
+const drawBall = () => {
   ctx.beginPath();
-  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.arc(ballX, ballY, ballR, 0, Math.PI * 2);
   ctx.fillStyle = "blue";
   ctx.fill();
   ctx.closePath();
 };
 
-const clearBar = x =>
-  ctx.clearRect(x, canvas.height - barHeight, barWidth, barHeight);
+const clearBar = () =>
+  ctx.clearRect(barX, canvas.height - barHeight, barWidth, barHeight);
 
-const drawBar = x => {
+const drawBar = () => {
   ctx.fillStyle = "black";
-  ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+  ctx.fillRect(barX, canvas.height - barHeight, barWidth, barHeight);
 };
 
 const draw = () => {
-  if (paused) {
+  if (isPaused || isGameOver) {
     requestAnimationFrame(draw);
     return;
   }
-  clearBall(ballX, ballY, ballR);
+  clearBall();
   ballX += dx;
   ballY += dy;
-  drawBall(ballX, ballY, ballR);
+  drawBall();
+
+  if (ballY + ballR >= canvas.height) {
+    gameOver();
+    return;
+  }
+  
   if (ballX >= canvas.width - ballR || ballX <= ballR) {
     dx = -dx;
     tick();
   }
-  if (ballY <= ballR || ballY >= canvas.height - ballR) {
+
+  if (ballY <= ballR) {
     dy = -dy;
     tick();
   }
+
+  if (
+    ballX >= barX &&
+    ballX <= barX + barWidth &&
+    ballY + ballR >= canvas.height - barHeight
+  ) {
+    dy = -ballSpeed;
+    beep();
+  }
+
   if (leftKeyPressed) {
     clearBar(barX);
     barX -= barSpeed;
@@ -67,7 +120,7 @@ const draw = () => {
     clearBar(barX);
     barX += barSpeed;
   }
-  drawBar(barX);
+  drawBar();
   requestAnimationFrame(draw);
 };
 
@@ -85,8 +138,15 @@ document.addEventListener(
   event => {
     leftKeyPressed = event.keyCode === 37;
     rightKeyPressed = event.keyCode === 39;
-    if (event.keyCode === 32) paused = !paused;
+    if (event.keyCode === 32) {
+      if (isGameOver)
+        restartGame();
+      else
+        isPaused = !isPaused;
+    }
   },
   false
 );
-requestAnimationFrame(draw);
+
+startNewGame();
+
