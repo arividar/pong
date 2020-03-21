@@ -6,8 +6,7 @@ let ctx = canvas.getContext("2d");
 const barHeight = 20;
 const barWidth = 140;
 const ballR = 10;
-const ballSpeed = 3;
-const barSpeed = 10;
+const barSpeed = 8;
 
 let leftKeyPressed=false;
 let rightKeyPressed=false;
@@ -16,16 +15,18 @@ let isPaused;
 let isGameOver;
 let ballX;
 let ballY;
-let dx;
-let dy;
+let ballDirectionX;
+let ballDirectionY;
 let barX;
+let ballSpeed;
 
 const startNewGame = () => {
   barX = canvas.width / 2 - barWidth / 2;
   ballX = barX + Math.floor(Math.random() * barWidth);
   ballY = canvas.height - barHeight - ballR - 1;
-  dx = Math.random() > 0.5 ? ballSpeed : -ballSpeed;
-  dy = -ballSpeed;
+  ballSpeed = 2;
+  ballDirectionX = Math.random() > 0.5 ? 1 : -1;
+  ballDirectionY = -1;
   isGameOver = false;
   isPaused = false;
   drawBar();
@@ -84,8 +85,8 @@ const draw = () => {
     return;
   }
   clearBall();
-  ballX += dx;
-  ballY += dy;
+  ballX += ballDirectionX * ballSpeed;
+  ballY += ballDirectionY * ballSpeed;
   drawBall();
 
   if (ballY + ballR >= canvas.height) {
@@ -94,12 +95,12 @@ const draw = () => {
   }
   
   if (ballX >= canvas.width - ballR || ballX <= ballR) {
-    dx = -dx;
+    ballDirectionX = -ballDirectionX;
     tick();
   }
 
   if (ballY <= ballR) {
-    dy = -dy;
+    ballDirectionY = -ballDirectionY;
     tick();
   }
 
@@ -108,15 +109,16 @@ const draw = () => {
     ballX <= barX + barWidth &&
     ballY + ballR >= canvas.height - barHeight
   ) {
-    dy = -ballSpeed;
+    ballDirectionY = -ballDirectionY;
+    ballSpeed++;
     beep();
   }
 
-  if (leftKeyPressed) {
+  if (leftKeyPressed && barX > 0) {
     clearBar(barX);
     barX -= barSpeed;
   }
-  if (rightKeyPressed) {
+  if (rightKeyPressed && barX < canvas.width-barWidth) {
     clearBar(barX);
     barX += barSpeed;
   }
