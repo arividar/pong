@@ -8,8 +8,8 @@ const barWidth = 140;
 const ballR = 10;
 const barSpeed = 8;
 
-let leftKeyPressed=false;
-let rightKeyPressed=false;
+let leftKeyPressed = false;
+let rightKeyPressed = false;
 
 let isPaused;
 let isGameOver;
@@ -32,25 +32,23 @@ const startNewGame = () => {
   drawBar();
   drawBall();
   requestAnimationFrame(draw);
-}
+};
 
 const restartGame = () => {
   clearBar();
   clearBall();
   startNewGame();
+};
+
+const playSound = (soundFile, volume) => {
+  const snd = new Audio(soundFile);
+  snd.volume = volume;
+  snd.play();
 }
 
-const tick = () => {
-  const snd = new Audio("static/media/tick.mp3");
-  snd.volume = 0.2;
-  snd.play();
-};
-
-const beep = () => {
-  const snd = new Audio("static/media/button-16.wav");
-  snd.volume = 0.2;
-  snd.play();
-};
+const playTick = () => playSound("static/media/tick.mp3", 0.2);
+const playBeep = () => playSound("static/media/button-16.wav", 0.2);
+const playGameOver = () => playSound("static/media/Funny-game-over-sound.mp3", 0.3);
 
 const gameOver = () => {
   ballY = canvas.height - ballR;
@@ -58,13 +56,16 @@ const gameOver = () => {
   drawBall();
   isGameOver = true;
   isPaused = true;
-  const snd = new Audio("static/media/Funny-game-over-sound.mp3");
-  snd.volume = 0.3;
-  snd.play();
+  playGameOver();
 };
 
 const clearBall = () =>
-  ctx.clearRect(ballX - ballR * 2, ballY - ballR * 2, ballX + ballR * 2, ballY + ballR * 2);
+  ctx.clearRect(
+    ballX - ballR * 2,
+    ballY - ballR * 2,
+    ballX + ballR * 2,
+    ballY + ballR * 2
+  );
 
 const drawBall = () => {
   ctx.beginPath();
@@ -96,37 +97,38 @@ const draw = () => {
     gameOver();
     return;
   }
-  
+
   drawBall();
 
   if (ballX >= canvas.width - ballR || ballX <= ballR) {
     ballDirectionX = -ballDirectionX;
-    tick();
+    playTick();
   }
 
   if (ballY <= ballR) {
     ballDirectionY = -ballDirectionY;
-    tick();
+    playTick();
   }
 
   if (
-    ballX >= barX &&
-    ballX <= barX + barWidth &&
+    ballX + ballR >= barX &&
+    ballX - ballR <= barX + barWidth &&
     ballY + ballR >= canvas.height - barHeight
   ) {
     ballDirectionY = -ballDirectionY;
     ballSpeed++;
-    beep();
+    playBeep();
   }
 
   if (leftKeyPressed && barX > 0) {
     clearBar(barX);
     barX -= barSpeed;
   }
-  if (rightKeyPressed && barX < canvas.width-barWidth) {
+  if (rightKeyPressed && barX < canvas.width - barWidth) {
     clearBar(barX);
     barX += barSpeed;
   }
+
   drawBar();
   requestAnimationFrame(draw);
 };
@@ -145,15 +147,10 @@ document.addEventListener(
   event => {
     leftKeyPressed = event.keyCode === 37;
     rightKeyPressed = event.keyCode === 39;
-    if (event.keyCode === 32) {
-      if (isGameOver)
-        restartGame();
-      else
-        isPaused = !isPaused;
-    }
+    if (event.keyCode === 32)
+      isGameOver ? restartGame() : (isPaused = !isPaused);
   },
   false
 );
 
 startNewGame();
-
