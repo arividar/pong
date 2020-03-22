@@ -34,7 +34,7 @@ const startNewGame = () => {
   isPaused = false;
   drawBar();
   drawBall();
-  requestAnimationFrame(draw);
+  draw();
 };
 
 const playSound = (soundFile, volume) => {
@@ -48,7 +48,11 @@ const playBeep = () => playSound("static/media/button-16.wav", 0.2);
 const playGameOver = () =>
   playSound("static/media/Funny-game-over-sound.mp3", 0.3);
 
-const clearCanvas = () => ctx.clearRect(0, 0, canvas.width, canvas.height);
+const clearCanvas = () => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#F6F6F6';
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
 
 const drawBall = () => {
   ctx.beginPath();
@@ -91,16 +95,17 @@ const draw = () => {
   }
 
   if (ballY <= ballR) {
-    ballDirectionY = -ballDirectionY;
+    ballDirectionY = 1;
     playTick();
   }
 
   if (
-    ballX + ballR >= barX &&
-    ballX - ballR <= barX + barWidth &&
+    ballX + ballR > barX &&
+    ballX - ballR < barX + barWidth &&
     ballY + ballR >= canvas.height - barHeight
   ) {
-    ballDirectionY = -ballDirectionY;
+    ballDirectionY = -1;
+    ballY = maxBallY - barHeight - ballR;
     ballSpeed++;
     playBeep();
   }
