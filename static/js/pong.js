@@ -11,7 +11,6 @@ const bgColor = "#acf";
 const maxBallY = canvas.height - ballR;
 const maxBallX = canvas.width - ballR;
 
-
 let leftKeyPressed = false;
 let rightKeyPressed = false;
 
@@ -49,14 +48,6 @@ const playBeep = () => playSound("static/media/button-16.wav", 0.2);
 const playGameOver = () =>
   playSound("static/media/Funny-game-over-sound.mp3", 0.3);
 
-const gameOver = () => {
-  drawBar();
-  drawBall();
-  isGameOver = true;
-  isPaused = true;
-  playGameOver();
-};
-
 const clearCanvas = () => ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 const drawBall = () => {
@@ -84,7 +75,11 @@ const draw = () => {
 
   if (ballY >= maxBallY) {
     ballY = maxBallY;
-    gameOver();
+    drawBar();
+    drawBall();
+    playGameOver();
+    isPaused = true;
+    isGameOver = true;
     return;
   }
 
@@ -111,7 +106,6 @@ const draw = () => {
   }
 
   if (leftKeyPressed && barX > 0) barX -= barSpeed;
-
   if (rightKeyPressed && barX < canvas.width - barWidth) barX += barSpeed;
 
   drawBar();
