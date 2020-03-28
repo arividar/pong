@@ -43,10 +43,10 @@ const playSound = (soundFile, volume) => {
   snd.play();
 };
 
-const playTick = () => playSound("static/media/tick.mp3", 0.2);
-const playBeep = () => playSound("static/media/button-16.wav", 0.2);
+const playTick = () => playSound("media/tick.mp3", 0.2);
+const playBeep = () => playSound("media/button-16.wav", 0.2);
 const playGameOver = () =>
-  playSound("static/media/Funny-game-over-sound.mp3", 0.3);
+  playSound("media/Funny-game-over-sound.mp3", 0.3);
 
 const clearCanvas = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
